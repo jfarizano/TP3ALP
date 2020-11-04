@@ -33,4 +33,3 @@ un String indicando cuál fue el error.
 Funcionamiento de >>=:
 Se utiliza para aplicar una función a un tipo, pero en el caso de que el 
 argumento sea un error este se sigue pasando y si es un tipo se aplica la función.
-
