@@ -1,0 +1,36 @@
+def I = \x:E. x
+def K = \x:E.\y:E.x
+def S = \x:E->E->E.\y:E->E.\z:E.(x z) (y z)
+
+Ejercicio 1:
+x: E -> E -> E
+y: E -> E
+z: E
+
+\x. \y. \z. (x z) (y z)
+
+x : E->E->E \in g        z : E \in g               y : E->E \in g         z : E \in g
+------------------ T-Var ------------- T-Var      ----------------- T-Var ----------- T-Var
+g |- x : E->E->E          g |- z :E                g |- y : E->E          g |- z : E
+-------------------------------------- T-App      ----------------------------------- T-App
+g |- (x z) : E -> E                                      g |- (y z) : E 
+--------------------------------------------------------------------------------- T-App
+g@(x : E -> E -> E, y: E -> E, z : E) |- (x z) (y z) : E
+--------------------------------------------------------------------------------- T-Abs
+x : E -> E -> E, y: E -> E |- \z:E.(x z) (y z): E -> E
+--------------------------------------------------------------------------------- T-Abs
+x : E -> E -> E |- \y:E->E.\z:E.(x z) (y z) : (E -> E) -> E -> E
+--------------------------------------------------------------------------------- T-Abs
+|- \x:E->E->E.\y:E->E.\z:E.(x z) (y z) : (E -> E -> E) -> (E -> E) -> E -> E
+
+
+Ejercicio 2:
+
+La función infer retorna un valor del tipo Either String Type
+porque en caso de que haya un error de tipo, se devuelve
+un String indicando cuál fue el error.
+
+Funcionamiento de >>=:
+Se utiliza para aplicar una función a un tipo, pero en el caso de que el 
+argumento sea un error este se sigue pasando y si es un tipo se aplica la función.
+
