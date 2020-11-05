@@ -21,11 +21,15 @@ conversion :: LamTerm -> Term
 conversion = conversion' []
 
 conversion' :: [String] -> LamTerm -> Term
-conversion' b (LVar n    ) = maybe (Free (Global n)) Bound (n `elemIndex` b)
-conversion' b (LApp t u  ) = conversion' b t :@: conversion' b u
-conversion' b (LAbs n t u) = Lam t (conversion' (n : b) u)
+conversion' b (LVar n )  = maybe (Free (Global n)) Bound (n `elemIndex` b)
+conversion' b (LApp t u) = conversion' b t :@: conversion' b u
+conversion' b (LAbs n t u )  = Lam t (conversion' (n : b) u)
 conversion' b (LLet s t1 t2) = Let (conversion' b t1) (conversion' (s:b) t2)
-conversion' b (LAs t tt) = As (conversion' b t) tt
+conversion' b (LAs t tt)     = As (conversion' b t) tt
+conversion' _ LUnit = Unit
+conversion' b (LPair t1 t2) = Pair (conversion' b t1) (conversion' b t2)
+conversion' b (LFst t) = Fst (conversion' b t)
+conversion' b (LSnd t) = Snd (conversion' b t)
 
 -----------------------
 --- eval
@@ -39,6 +43,10 @@ sub i t (u   :@: v)           = sub i t u :@: sub i t v
 sub i t (Lam t'  u)           = Lam t' (sub (i + 1) t u)
 sub i t (Let t1 t2)           = Let t1 (sub (i + 1) t t2)
 sub i t (As u tu)             = As (sub i t u) tu
+sub _ _ Unit                  = Unit
+sub i t (Pair t1 t2)          = Pair (sub i t t1) (sub i t t2)
+sub i t (Fst u)               = Fst (sub i t u)
+sub i t (Snd u)               = Snd (sub i t u)
 
 -- evaluador de términos
 eval :: NameEnv Value Type -> Term -> Value
@@ -52,6 +60,15 @@ eval e (u        :@: v      ) = case eval e u of
   _         -> error "Error de tipo en run-time, verificar type checker"
 eval e (Let t1 t2) = eval e (sub 0 t1 t2)
 eval e (As t tt) = eval e t
+eval _ Unit = VUnit
+eval e (Pair t1 t2) = VPair (eval e t1) (eval e t2)
+eval e (Fst t) = case eval e t of
+  VPair v1 _ -> v1
+  _          -> error "Error de tipo en run-time, verificar type checker"
+eval e (Snd t) = case eval e t of
+  VPair _ v2 -> v2
+  _          -> error "Error de tipo en run-time, verificar type checker"
+
 
 -----------------------
 --- quoting
@@ -59,6 +76,8 @@ eval e (As t tt) = eval e t
 
 quote :: Value -> Term
 quote (VLam t f) = Lam t f
+quote VUnit = Unit
+quote (VPair v1 v2) = Pair (quote v1) (quote v2)
 
 ----------------------
 --- type checker
@@ -108,5 +127,9 @@ infer' c e (Lam t u) = infer' (t : c) e u >>= \tu -> ret $ FunT t tu
 infer' c e (Let t u) = infer' c e t >>= \tt -> infer' (tt : c) e u
 infer' c e (As t tt) = infer' c e t >>= \tt' -> if tt == tt' then ret tt 
                                                              else matchError tt tt'
+infer' _ _ Unit = ret UnitT
+infer' c e (Pair t u) = infer' c e t >>= \tt -> infer' c e u >>= \tu -> ret $ PairT tt tu
+infer' c e (Fst t) = infer' c e t >>= \(PairT tu _) -> ret tu
+infer' c e (Snd t) = infer' c e t >>= \(PairT _ tu) -> ret tu
 
 ----------------------------------
