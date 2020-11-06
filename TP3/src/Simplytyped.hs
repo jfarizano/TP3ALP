@@ -30,6 +30,9 @@ conversion' _ LUnit = Unit
 conversion' b (LPair t1 t2) = Pair (conversion' b t1) (conversion' b t2)
 conversion' b (LFst t) = Fst (conversion' b t)
 conversion' b (LSnd t) = Snd (conversion' b t)
+conversion' _ LZero = Zero
+conversion' b (LSuc t) = Suc (conversion' b t)
+conversion' b (LRec t1 t2 t3) = Rec (conversion' b t1) (conversion' b t2) (conversion' b t3)
 
 -----------------------
 --- eval
@@ -47,6 +50,9 @@ sub _ _ Unit                  = Unit
 sub i t (Pair t1 t2)          = Pair (sub i t t1) (sub i t t2)
 sub i t (Fst u)               = Fst (sub i t u)
 sub i t (Snd u)               = Snd (sub i t u)
+sub _ _ Zero                  = Zero
+sub i t (Suc u)               = Suc (sub i t u)
+sub i t (Rec t1 t2 t3)        = Rec (sub i t t1) (sub i t t2) (sub i t t3)
 
 -- evaluador de términos
 eval :: NameEnv Value Type -> Term -> Value
@@ -68,7 +74,13 @@ eval e (Fst t) = case eval e t of
 eval e (Snd t) = case eval e t of
   VPair _ v2 -> v2
   _          -> error "Error de tipo en run-time, verificar type checker"
-
+eval _ Zero = VNum NZero
+eval e (Suc t) = case eval e t of
+  VNum n -> VNum (NSuc n)
+  _      -> error "Error de tipo en run-time, verificar type checker"
+eval e (Rec t1 t2 Zero) = eval e t1
+eval e (Rec t1 t2 (Suc t)) = eval e ((t2 :@: Rec t1 t2 t) :@: t)
+eval e (Rec t1 t2 t3) = let v3 = eval e t3 in eval e (Rec t1 t2 (quote v3))
 
 -----------------------
 --- quoting
@@ -78,6 +90,8 @@ quote :: Value -> Term
 quote (VLam t f) = Lam t f
 quote VUnit = Unit
 quote (VPair v1 v2) = Pair (quote v1) (quote v2)
+quote (VNum NZero) = Zero
+quote (VNum (NSuc n)) = Suc (quote (VNum n))
 
 ----------------------
 --- type checker
@@ -129,7 +143,20 @@ infer' c e (As t tt) = infer' c e t >>= \tt' -> if tt == tt' then ret tt
                                                              else matchError tt tt'
 infer' _ _ Unit = ret UnitT
 infer' c e (Pair t u) = infer' c e t >>= \tt -> infer' c e u >>= \tu -> ret $ PairT tt tu
-infer' c e (Fst t) = infer' c e t >>= \(PairT tu _) -> ret tu
-infer' c e (Snd t) = infer' c e t >>= \(PairT _ tu) -> ret tu
+infer' c e (Fst t) = infer' c e t >>= \tt ->
+  case tt of
+    PairT tu _ -> ret tu
+    _ -> err $ "Se esperaba un par, pero " ++ render (printType tt) ++ " fue inferido."  
+infer' c e (Snd t) = infer' c e t >>= \tt ->
+  case tt of
+    PairT _ tu -> ret tu
+    _ -> err $ "Se esperaba un par, pero " ++ render (printType tt) ++ " fue inferido."
+infer' c e Zero = ret NatT
+infer' c e (Suc t) = infer' c e t >>= \tt -> if tt == NatT then ret tt 
+                                                           else matchError NatT tt
+infer' c e (Rec t1 t2 t3) = infer' c e t1 >>= \tt1 -> infer' c e t2 >>= \tt2 ->
+  if tt2 == (FunT tt1 (FunT NatT tt1)) then (infer' c e t3 >>= \tt3 -> if tt3 == NatT then ret tt1 
+                                                                                      else matchError NatT tt3)
+                                       else matchError (FunT tt1 (FunT NatT tt1)) tt2
 
 ----------------------------------
