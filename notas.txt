@@ -84,3 +84,55 @@ Ejercicio 9:
           |- (unit as Unit, \x : (E,E). snd x) : (Unit, (E, E) -> E)
 -------------------------------------------------- ------------------------------T-Fst
               |- fst (unit as Unit, \x : (E,E). snd x) : Unit
+
+
+
+
+
+
+
+
+
+
+
+-- ack m n = \m:Nat.\n:Nat. (R succ t2 m) n
+
+-- ack 0 n = (R succ t2 0) n <- E-RZero
+--         = succ n
+
+-- ack (succ m) 0 = (R succ t2 (Succ m)) 0
+--                = t2 (R succ t2 m) m 0
+
+-- ack (succ m) n = (R succ t2 (Succ m)) n
+--                = t2 (R succ t2 m) m n
+
+-- t2 = b = \(ack m-1) (m-1). \n. R ((ack m-1) (succ zero)) () n 
+
+-- ack 0 n = n + 1
+-- ack m 0 = ack (m-1) 1
+-- ack m n = ack (m-1) (ack m (n-1))
+
+
+
+
+
+-- suma = R (\y.y) (\s x. \y. succ (s y))
+
+-- R a b
+
+-- f 0 = a
+-- f (succ n) = b (f n) n
+
+-- b = (\s x. \y. succ (s y))
+-- (f n) = s = (suma zero)
+-- n = 
+
+-- suma 0 y = y
+-- suma (succ x) y = succ (suma x y)
+
+-- suma 1 1 = (R (\y.y) (\s x. \y. succ (s y)) (succ zero)) (succ zero)
+--          = (\y. succ (suma zero y)) (succ zero)
+--          = succ (suma zero (succ zero))
+--          = succ ((\y. y) (succ zero))
+--          = succ (succ zero) = 2 :) tkm
+ 
