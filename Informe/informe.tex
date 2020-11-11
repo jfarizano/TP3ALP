@@ -134,6 +134,56 @@ y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
 
 \section*{Ejercicio 5}
 
+
+\begin{prooftree}
+
+%======================================================================    
+    \AxiomC{}
+
+    \RightLabel{xd}
+    \UnaryInfC{$
+         x : E \in x : E 
+    $}
+
+    \RightLabel{T-Var}
+    \UnaryInfC{$
+         x : E \vdash x : E 
+    $}
+
+    \RightLabel{T-Abs}
+    \UnaryInfC{$
+        \vdash \lambda x : E. \; x : E \rightarrow E
+    $}
+
+    \RightLabel{T-Ascribe}
+    \UnaryInfC{$
+        (\lambda x : E. \; x) \; as \; E \rightarrow E : E \rightarrow E
+    $}
+%======================================================================
+
+\AxiomC{}
+    \RightLabel{xd}
+    \UnaryInfC{$
+        z : E \rightarrow E \vdash z : E \rightarrow E 
+    $}
+
+    \RightLabel{T-Var}
+    \UnaryInfC{$
+        z : E \rightarrow E \vdash z : E \rightarrow E 
+    $}
+%=====================================================================
+    \RightLabel{T-Let}
+    \BinaryInfC{$
+        (let \; z = ((\lambda x : E. \; x) \; as \; E \rightarrow E) \; in \; z) : E \rightarrow E
+    $}
+    \RightLabel{T-Ascribe}
+    \UnaryInfC{$
+        \vdash (let \; z = ((\lambda x : E. \; x) \; as \; E \rightarrow E) \; in \; z) 
+        \; as \; E \rightarrow E : E \rightarrow E 
+    $}
+\end{prooftree}
+
+
 %==============================================================================
 %==============================================================================
 %==============================================================================
@@ -189,8 +239,65 @@ y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
     $} 
 \end{prooftree}
 
-$fst \; (v_1, \; v_2) \rightarrow v_1 \; \; \; \; E-Fst'$ \\
+\begin{equation*}
+    fst \; (v_1, \; v_2) \rightarrow v_1 \; \; \; \; E-Fst'
+\end{equation*}
 
-$snd \; (v_1, \; v_2) \rightarrow v_2 \; \; \; \; E-Snd'$
+\begin{equation*}   
+    snd \; (v_1, \; v_2) \rightarrow v_2 \; \; \; \; E-Snd'
+\end{equation*}
+
+
+%==============================================================================
+%==============================================================================
+%==============================================================================
+
+\section*{Ejercicio 9}
+
+
+
+\begin{prooftree}
+    \AxiomC{}
+    \RightLabel{T-Unit}
+    \UnaryInfC{$
+        \vdash unit \; : \; Unit
+    $}
+
+    \RightLabel{T-Ascribe}
+    \UnaryInfC{$
+        \vdash unit \; as \; Unit : Unit
+    $}
+
+%=======================================================
+    \AxiomC{$
+        x : (E, \; E) \in x : (E, \; E)
+    $}
+
+    \RightLabel{T-Var}
+    \UnaryInfC{$
+        x : (E, \; E) \vdash x : (E, \; E)
+    $}
+
+    \RightLabel{T-Snd}
+    \UnaryInfC{$
+        \vdash x : (E, \; E). \; snd \; x : E
+    $}
+
+    \RightLabel{T-Abs}
+    \UnaryInfC{$
+        \vdash \lambda x : (E, \; E). \; snd \; x : (E, \; E) \rightarrow E
+    $}
+
+    \RightLabel{T-Pair}
+    \BinaryInfC{$
+        \vdash (unit \; as \; Unit, \lambda x : (E, \; E). snd \; x) : (Unit, \; (E, \; E) \rightarrow E)
+    $}
+
+    \RightLabel{T-Fst}
+    \UnaryInfC{$
+        \vdash fst \; (unit \; as \; Unit, \lambda x : (E, \; E). snd \; x) : Unit
+    $}
+\end{prooftree}
+
 
 \end{document}
