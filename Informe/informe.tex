@@ -1,0 +1,196 @@
+\documentclass[11pt, fleqn]{article}
+\usepackage[a4paper, margin=2.54cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, mexico]{babel}
+\usepackage[spanish]{layout}
+\usepackage[article]{ragged2e}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{proof}
+
+\input{tp1-defs}
+\usepackage{bussproofs}
+\usepackage{graphicx}
+
+\setlength{\parindent}{5pt}
+
+\title{
+    Trabajo Práctico N° 3 \\
+    \large Análisis de Lenguajes de Programación}
+\author{Mellino, Natalia \and Farizano, Juan Ignacio}
+\date{}
+
+\begin{document}
+\maketitle
+\noindent\rule{\textwidth}{1pt}
+
+\section*{Ejercicio 1}
+
+\begin{prooftree}
+
+    \AxiomC{}
+    \RightLabel{xd}
+    \UnaryInfC{$
+       x : E \rightarrow E \rightarrow E \in  \Gamma'  
+    $}     
+
+    \RightLabel{T-Var}
+    \UnaryInfC{$
+    \Gamma' \vdash x : E \rightarrow E \rightarrow E
+    $}
+
+    %==========================================
+
+    \AxiomC{}
+    \RightLabel{xd}
+    \UnaryInfC{$
+       z : E \in  \Gamma'  
+    $}  
+
+    \RightLabel{T-Var}
+    \UnaryInfC{$
+       \Gamma' \vdash z : E 
+    $}
+
+    \RightLabel{T-App}
+    \BinaryInfC{$
+        \Gamma' \vdash (x \; z) : E \rightarrow E
+    $}
+% ============================================================
+    
+    \AxiomC{}
+    \RightLabel{xd}
+    \UnaryInfC{$
+         y : E \rightarrow E \in \Gamma'
+    $}
+
+    \RightLabel{T-Var}
+    \UnaryInfC{$
+        \Gamma' \vdash y : E \rightarrow E
+    $}
+%==========================================
+    \AxiomC{}
+    \RightLabel{xd}
+    \UnaryInfC{$
+         z : E \in \Gamma'
+    $}
+
+    \RightLabel{T-Var}
+    \UnaryInfC{$
+        \Gamma' \vdash z : E 
+    $}
+
+    \RightLabel{T-App}
+    \BinaryInfC{$
+        \Gamma' \vdash (y \; z) : E
+    $}
+% ==============================================================
+    \RightLabel{T-App}
+    \BinaryInfC{$        
+        \underbrace{\Gamma, \; z : E}_{\Gamma'} \vdash
+        (x \; z) \; (y \; z) : E
+    $}
+
+    \RightLabel{T-Abs}
+    \UnaryInfC{$
+        \underbrace{x : E \rightarrow E \rightarrow E, \; y: E \rightarrow E}_{\Gamma} \vdash 
+        \lambda z : E. \; (x \; z) \; (y \; z) : E \rightarrow E
+    $}
+
+    \RightLabel{T-Abs}
+    \UnaryInfC{$
+        x : E \rightarrow E \rightarrow E \vdash \lambda y : E \rightarrow E. \; 
+        \lambda z : E. \; (x \; z) \; (y \; z) : (E \rightarrow E) \rightarrow E \rightarrow E
+    $}
+
+    \RightLabel{T-Abs}
+    \UnaryInfC{$
+        \vdash \lambda x : E \rightarrow E \rightarrow E. \;  \lambda y : E \rightarrow E  \; 
+        \lambda z : E. \; (x \; z) \; (y \; z) : (E \rightarrow E \rightarrow E) \rightarrow 
+        (E \rightarrow E) \rightarrow E \rightarrow E 
+    $} 
+\end{prooftree}
+
+
+%==============================================================================
+%==============================================================================
+%==============================================================================
+
+\section*{Ejercicio 2}
+
+La función \texttt{infer} retorna un valor del tipo \texttt{Either String Type}
+porque en caso de que haya un error de tipo, se devuelve un String indicando
+cuál fue el error. \\
+
+\textbf{Funcionamiento de \texttt{>>=}:} se utiliza para aplicar una función
+a un tipo, pero en el caso de que el argumento sea un error, éste se sigue pasando
+y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
+
+%==============================================================================
+%==============================================================================
+%==============================================================================
+
+\section*{Ejercicio 5}
+
+%==============================================================================
+%==============================================================================
+%==============================================================================
+
+\section*{Ejercicio 7}
+
+
+\begin{prooftree}
+
+    \AxiomC{$
+         t_1 \rightarrow t_1'
+    $}
+
+    \RightLabel{E-Pair$_1$}
+    \UnaryInfC{$
+        (t_1, \; t_2) \rightarrow (t_1', \; t_2)
+    $} 
+\end{prooftree}
+
+\begin{prooftree}
+
+    \AxiomC{$
+         t_2 \rightarrow t_2'
+    $}
+
+    \RightLabel{E-Pair$_2$}
+    \UnaryInfC{$
+        (v, \; t_2) \rightarrow (v, \; t_2')
+    $} 
+\end{prooftree}
+
+\begin{prooftree}
+
+    \AxiomC{$
+         t \rightarrow t'
+    $}
+
+    \RightLabel{E-Fst}
+    \UnaryInfC{$
+        fst \; t \rightarrow fst \; t'
+    $} 
+\end{prooftree}
+
+\begin{prooftree}
+
+    \AxiomC{$
+         t \rightarrow t'
+    $}
+
+    \RightLabel{E-Snd}
+    \UnaryInfC{$
+        snd \; t \rightarrow snd \; t'
+    $} 
+\end{prooftree}
+
+$fst \; (v_1, \; v_2) \rightarrow v_1 \; \; \; \; E-Fst'$ \\
+
+$snd \; (v_1, \; v_2) \rightarrow v_2 \; \; \; \; E-Snd'$
+
+\end{document}
