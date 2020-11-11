@@ -1,4 +1,4 @@
-\documentclass[11pt, fleqn]{article}
+\documentclass[11pt]{article}
 \usepackage[a4paper, margin=2.54cm]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage[spanish, mexico]{babel}
@@ -9,8 +9,6 @@
 \usepackage{amssymb}
 \usepackage{amsfonts}
 \usepackage{proof}
-
-\input{tp1-defs}
 \usepackage{bussproofs}
 \usepackage{graphicx}
 
@@ -30,82 +28,75 @@
 
 \begin{prooftree}
 
-    \AxiomC{}
-    \RightLabel{xd}
-    \UnaryInfC{$
+    \AxiomC{$
        x : E \rightarrow E \rightarrow E \in  \Gamma'  
     $}     
 
-    \RightLabel{T-Var}
+    \RightLabel{\textsc{T-Var}}
     \UnaryInfC{$
     \Gamma' \vdash x : E \rightarrow E \rightarrow E
     $}
 
     %==========================================
 
-    \AxiomC{}
-    \RightLabel{xd}
-    \UnaryInfC{$
+    \AxiomC{$
        z : E \in  \Gamma'  
     $}  
 
-    \RightLabel{T-Var}
+    \RightLabel{\textsc{T-Var}}
     \UnaryInfC{$
        \Gamma' \vdash z : E 
     $}
 
-    \RightLabel{T-App}
+    \RightLabel{\textsc{T-App}}
     \BinaryInfC{$
         \Gamma' \vdash (x \; z) : E \rightarrow E
     $}
 % ============================================================
-    
-    \AxiomC{}
-    \RightLabel{xd}
-    \UnaryInfC{$
+
+    \AxiomC{$
          y : E \rightarrow E \in \Gamma'
     $}
 
-    \RightLabel{T-Var}
+    \RightLabel{\textsc{T-Var}}
     \UnaryInfC{$
         \Gamma' \vdash y : E \rightarrow E
     $}
 %==========================================
-    \AxiomC{}
-    \RightLabel{xd}
-    \UnaryInfC{$
+
+    \AxiomC{$
          z : E \in \Gamma'
     $}
 
-    \RightLabel{T-Var}
+    \RightLabel{\textsc{T-Var}}
     \UnaryInfC{$
         \Gamma' \vdash z : E 
     $}
 
-    \RightLabel{T-App}
+    \RightLabel{\textsc{T-App}}
     \BinaryInfC{$
         \Gamma' \vdash (y \; z) : E
     $}
 % ==============================================================
-    \RightLabel{T-App}
+    \RightLabel{\textsc{T-App}}
     \BinaryInfC{$        
         \underbrace{\Gamma, \; z : E}_{\Gamma'} \vdash
         (x \; z) \; (y \; z) : E
     $}
 
-    \RightLabel{T-Abs}
+    \RightLabel{\textsc{T-Abs}}
     \UnaryInfC{$
         \underbrace{x : E \rightarrow E \rightarrow E, \; y: E \rightarrow E}_{\Gamma} \vdash 
         \lambda z : E. \; (x \; z) \; (y \; z) : E \rightarrow E
     $}
 
-    \RightLabel{T-Abs}
+    \RightLabel{\textsc{T-Abs}}
     \UnaryInfC{$
         x : E \rightarrow E \rightarrow E \vdash \lambda y : E \rightarrow E. \; 
         \lambda z : E. \; (x \; z) \; (y \; z) : (E \rightarrow E) \rightarrow E \rightarrow E
     $}
 
-    \RightLabel{T-Abs}
+    \RightLabel{\textsc{T-Abs}}
     \UnaryInfC{$
         \vdash \lambda x : E \rightarrow E \rightarrow E. \;  \lambda y : E \rightarrow E  \; 
         \lambda z : E. \; (x \; z) \; (y \; z) : (E \rightarrow E \rightarrow E) \rightarrow 
@@ -124,9 +115,14 @@ La función \texttt{infer} retorna un valor del tipo \texttt{Either String Type}
 porque en caso de que haya un error de tipo, se devuelve un String indicando
 cuál fue el error. \\
 
-\textbf{Funcionamiento de \texttt{>>=}:} se utiliza para aplicar una función
-a un tipo, pero en el caso de que el argumento sea un error, éste se sigue pasando
-y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
+\textbf{Funcionamiento de \texttt{>>=}}:
+Este operador recibe un valor del tipo \texttt{Either String Type} y una función
+con el tipo \texttt{Type $\rightarrow$ Either String Type}.
+
+Se utiliza cuando realizamos una llamada recursiva en \texttt{infer} y
+devuelve un valor del tipo \texttt{Either String Type}, en el caso
+de recibir un error el operador nos permite propagarlo y en el caso de recibir
+un tipo le aplicamos la función dada como argumento.
 
 %==============================================================================
 %==============================================================================
@@ -138,45 +134,41 @@ y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
 \begin{prooftree}
 
 %======================================================================    
-    \AxiomC{}
 
-    \RightLabel{xd}
-    \UnaryInfC{$
+    \AxiomC{$
          x : E \in x : E 
     $}
 
-    \RightLabel{T-Var}
+    \RightLabel{\textsc{T-Var}}
     \UnaryInfC{$
          x : E \vdash x : E 
     $}
 
-    \RightLabel{T-Abs}
+    \RightLabel{\textsc{T-Abs}}
     \UnaryInfC{$
         \vdash \lambda x : E. \; x : E \rightarrow E
     $}
 
-    \RightLabel{T-Ascribe}
+    \RightLabel{\textsc{T-Ascribe}}
     \UnaryInfC{$
         (\lambda x : E. \; x) \; as \; E \rightarrow E : E \rightarrow E
     $}
 %======================================================================
 
-\AxiomC{}
-    \RightLabel{xd}
-    \UnaryInfC{$
-        z : E \rightarrow E \vdash z : E \rightarrow E 
+    \AxiomC{$
+        z : E \rightarrow E \in z : E \rightarrow E 
     $}
 
-    \RightLabel{T-Var}
+    \RightLabel{\textsc{T-Var}}
     \UnaryInfC{$
         z : E \rightarrow E \vdash z : E \rightarrow E 
     $}
 %=====================================================================
-    \RightLabel{T-Let}
+    \RightLabel{\textsc{T-Let}}
     \BinaryInfC{$
         (let \; z = ((\lambda x : E. \; x) \; as \; E \rightarrow E) \; in \; z) : E \rightarrow E
     $}
-    \RightLabel{T-Ascribe}
+    \RightLabel{\textsc{T-Ascribe}}
     \UnaryInfC{$
         \vdash (let \; z = ((\lambda x : E. \; x) \; as \; E \rightarrow E) \; in \; z) 
         \; as \; E \rightarrow E : E \rightarrow E 
@@ -197,7 +189,7 @@ y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
          t_1 \rightarrow t_1'
     $}
 
-    \RightLabel{E-Pair$_1$}
+    \RightLabel{\textsc{E-Pair$_1$}}
     \UnaryInfC{$
         (t_1, \; t_2) \rightarrow (t_1', \; t_2)
     $} 
@@ -209,11 +201,18 @@ y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
          t_2 \rightarrow t_2'
     $}
 
-    \RightLabel{E-Pair$_2$}
+    \RightLabel{\textsc{E-Pair$_2$}}
     \UnaryInfC{$
         (v, \; t_2) \rightarrow (v, \; t_2')
     $} 
 \end{prooftree}
+
+\[
+    fst \; (v_1, \; v_2) \rightarrow v_1 \; \; \; \; \textsc{E-Fst'}
+\]
+\[
+    snd \; (v_1, \; v_2) \rightarrow v_2 \; \; \; \; \textsc{E-Snd'}
+\]
 
 \begin{prooftree}
 
@@ -221,7 +220,7 @@ y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
          t \rightarrow t'
     $}
 
-    \RightLabel{E-Fst}
+    \RightLabel{\textsc{E-Fst}}
     \UnaryInfC{$
         fst \; t \rightarrow fst \; t'
     $} 
@@ -233,19 +232,12 @@ y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
          t \rightarrow t'
     $}
 
-    \RightLabel{E-Snd}
+    \RightLabel{\textsc{E-Snd}}
     \UnaryInfC{$
         snd \; t \rightarrow snd \; t'
     $} 
 \end{prooftree}
 
-\begin{equation*}
-    fst \; (v_1, \; v_2) \rightarrow v_1 \; \; \; \; E-Fst'
-\end{equation*}
-
-\begin{equation*}   
-    snd \; (v_1, \; v_2) \rightarrow v_2 \; \; \; \; E-Snd'
-\end{equation*}
 
 
 %==============================================================================
@@ -258,12 +250,12 @@ y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
 
 \begin{prooftree}
     \AxiomC{}
-    \RightLabel{T-Unit}
+    \RightLabel{\textsc{T-Unit}}
     \UnaryInfC{$
         \vdash unit \; : \; Unit
     $}
 
-    \RightLabel{T-Ascribe}
+    \RightLabel{\textsc{T-Ascribe}}
     \UnaryInfC{$
         \vdash unit \; as \; Unit : Unit
     $}
@@ -273,27 +265,27 @@ y su es un tipo se aplica la función. \textbf{mmm esplicar megor che}
         x : (E, \; E) \in x : (E, \; E)
     $}
 
-    \RightLabel{T-Var}
+    \RightLabel{\textsc{T-Var}}
     \UnaryInfC{$
         x : (E, \; E) \vdash x : (E, \; E)
     $}
 
-    \RightLabel{T-Snd}
+    \RightLabel{\textsc{T-Snd}}
     \UnaryInfC{$
         \vdash x : (E, \; E). \; snd \; x : E
     $}
 
-    \RightLabel{T-Abs}
+    \RightLabel{\textsc{T-Abs}}
     \UnaryInfC{$
         \vdash \lambda x : (E, \; E). \; snd \; x : (E, \; E) \rightarrow E
     $}
 
-    \RightLabel{T-Pair}
+    \RightLabel{\textsc{T-Pair}}
     \BinaryInfC{$
         \vdash (unit \; as \; Unit, \lambda x : (E, \; E). snd \; x) : (Unit, \; (E, \; E) \rightarrow E)
     $}
 
-    \RightLabel{T-Fst}
+    \RightLabel{\textsc{T-Fst}}
     \UnaryInfC{$
         \vdash fst \; (unit \; as \; Unit, \lambda x : (E, \; E). snd \; x) : Unit
     $}
