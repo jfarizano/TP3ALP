@@ -208,10 +208,10 @@ un tipo le aplicamos la función dada como argumento.
 \end{prooftree}
 
 \[
-    fst \; (v_1, \; v_2) \rightarrow v_1 \; \; \; \; \textsc{E-Fst'}
+    fst \; (v_1, \; v_2) \rightarrow v_1 \; \; \; \; \textsc{E-Fst}
 \]
 \[
-    snd \; (v_1, \; v_2) \rightarrow v_2 \; \; \; \; \textsc{E-Snd'}
+    snd \; (v_1, \; v_2) \rightarrow v_2 \; \; \; \; \textsc{E-Snd}
 \]
 
 \begin{prooftree}
@@ -220,7 +220,7 @@ un tipo le aplicamos la función dada como argumento.
          t \rightarrow t'
     $}
 
-    \RightLabel{\textsc{E-Fst}}
+    \RightLabel{\textsc{E-Fst$_1$}}
     \UnaryInfC{$
         fst \; t \rightarrow fst \; t'
     $} 
@@ -232,7 +232,7 @@ un tipo le aplicamos la función dada como argumento.
          t \rightarrow t'
     $}
 
-    \RightLabel{\textsc{E-Snd}}
+    \RightLabel{\textsc{E-Snd$_1$}}
     \UnaryInfC{$
         snd \; t \rightarrow snd \; t'
     $} 
